@@ -1,0 +1,874 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Competitor Intelligence Pipeline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;family=Lato:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* 1. RESET & GENERAL LAYOUT */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            display: grid;
+            gap: 40px;
+            grid-template-columns: 1fr;
+            padding: 40px 0;
+            place-items: center;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #0f172a; /* Sophisticated Deep Slate/Navy background */
+            color: #f8fafc;
+            font-family: 'Lato', sans-serif;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Abstract Background Decoration (Glow Blob) */
+        .slide-container::before {
+            content: "";
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .slide-container::after {
+            content: "";
+            position: absolute;
+            bottom: -200px;
+            left: -200px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .slide-container > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 2. TYPOGRAPHY & TEXT STYLING */
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        p, li, td, th {
+            color: #cbd5e1;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .slide-container h1 {
+            font-size: 56px;
+            line-height: 1.15;
+            margin-bottom: 24px;
+        }
+
+        .slide-container h1 span {
+            color: #6366f1; /* Indigo Accent */
+        }
+
+        .slide-container .slide-title {
+            font-size: 38px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            border-left: 5px solid #6366f1;
+            padding-left: 20px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .slide-container .slide-title span {
+            color: #10b981; /* Mint/Green Accent */
+        }
+
+        .slide-container .subtitle {
+            font-size: 22px;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            max-width: 900px;
+        }
+
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        /* 3. STRUCTURAL COMPONENTS */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .two-column.tiled {
+            align-items: stretch;
+        }
+
+        .two-column.tiled > div {
+            background-color: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            padding: 40px;
+        }
+
+        .two-column.tiled h3 {
+            color: #6366f1;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        /* Highlight Metrics */
+        .highlight-numbers-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .highlight-numbers-layout .number-box {
+            text-align: center;
+            background-color: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 16px;
+            padding: 40px 20px;
+        }
+
+        .highlight-numbers-layout .number {
+            font-size: 100px;
+            color: #10b981;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .highlight-numbers-layout .number-label {
+            font-size: 18px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .highlight-numbers-layout h3 {
+            font-size: 26px;
+            margin-bottom: 15px;
+        }
+
+        /* Tiled Content with Icons */
+        .tiled-content {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        .tile {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .tile .icon {
+            font-size: 32px;
+            color: #10b981;
+            margin-bottom: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .tile h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .tile p {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #94a3b8;
+        }
+
+        /* Styled Bullet List */
+        .bullet-list {
+            list-style: none;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 45px;
+            margin-bottom: 25px;
+            font-size: 18px;
+        }
+
+        .bullet-list li i {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            color: #6366f1;
+            font-size: 22px;
+        }
+
+        .bullet-list li strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* UI Browser Mockup Window styling */
+        .browser-mockup {
+            width: 100%;
+            height: 380px;
+            background-color: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 15px rgba(99, 102, 241, 0.15);
+        }
+
+        .browser-bar {
+            height: 40px;
+            background-color: #202023;
+            border-bottom: 1px solid #27272a;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+            position: relative;
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .browser-dot.red { background-color: #ef4444; }
+        .browser-dot.yellow { background-color: #eab308; }
+        .browser-dot.green { background-color: #22c55e; }
+
+        .browser-address {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #18181b;
+            color: #71717a;
+            font-size: 12px;
+            padding: 4px 20px;
+            border-radius: 6px;
+            border: 1px solid #27272a;
+            font-family: monospace;
+            white-space: nowrap;
+        }
+
+        .browser-content {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #121214;
+        }
+
+        .workflow-screenshot {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-fallback-box {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            height: 100%;
+            text-align: center;
+        }
+
+        /* Table Design */
+        .table-layout {
+            width: 100%;
+            background-color: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+
+        .table-layout table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-layout th, .table-layout td {
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        .table-layout th {
+            background-color: #162238;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .table-layout td {
+            font-size: 15px;
+            color: #cbd5e1;
+        }
+
+        .table-layout tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Timeline Design */
+        .timeline-layout {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .timeline-layout::before {
+            content: "";
+            position: absolute;
+            top: 45px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #334155;
+            z-index: 0;
+        }
+
+        .timeline-item {
+            width: 22%;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .timeline-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #0f172a;
+            border: 4px solid #6366f1;
+            margin: 35px auto 20px auto;
+        }
+
+        .timeline-item.completed .timeline-dot {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+
+        .timeline-item h3 {
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item p {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        /* Chart Styling */
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .bar {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .bar .label {
+            width: 180px;
+            font-size: 16px;
+            color: #94a3b8;
+            text-align: right;
+            padding-right: 25px;
+            font-weight: 600;
+        }
+
+        .bar .bar-inner {
+            flex-grow: 1;
+            height: 36px;
+            background-color: #1e293b;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .bar .bar-fill {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #6366f1, #4f46e5);
+        }
+
+        .chart-summary {
+            font-size: 15px;
+            color: #94a3b8;
+            margin-top: 25px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Q&A / Footer layout */
+        .qa-layout {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .qa-layout h2 {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .qa-layout p {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        .qa-layout .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .qa-layout .badge {
+            background-color: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 15px;
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        /* Code-looking block styling */
+        .code-snippet {
+            background-color: #0b0f19;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 24px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            color: #38bdf8;
+            line-height: 1.5;
+            text-align: left;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Slide 1: Title Slide -->
+<div class="slide-container" id="slide1">
+    <div class="content-area" style="text-align: center; align-items: center;">
+        <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); padding: 8px 16px; border-radius: 30px; display: inline-block; margin-bottom: 30px;">
+            <span style="color: #6366f1; font-weight: 600; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">Product Operations Case Study</span>
+        </div>
+        <h1>Automated Competitor<br><span>Intelligence Pipeline</span></h1>
+        <p class="subtitle">An optimized, serverless n8n system built to extract, normalize, and visually decode viral consumer psychology triggers in the D2C Dog Food industry.</p>
+        <div style="display: flex; gap: 40px; margin-top: 20px;">
+            <div><strong style="color: #ffffff;">Host:</strong> <span style="color: #94a3b8;">Railway (PostgreSQL)</span></div>
+            <div><strong style="color: #ffffff;">Model:</strong> <span style="color: #94a3b8;">gpt-4o-mini (Vision)</span></div>
+            <div><strong style="color: #ffffff;">Engine:</strong> <span style="color: #94a3b8;">n8n Base Loop</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 2: The Core Challenge (Platform Algorithmic Bias) -->
+<div class="slide-container" id="slide2">
+    <h2 class="slide-title">The Challenge: <span>Platform Algorithmic Bias</span></h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <p style="margin-bottom: 25px; font-size: 19px; color: #f8fafc;">Standard scraping outputs are fundamentally skewed. Reels and video formats dominate public metrics, completely hiding high-performing static strategies.</p>
+                <ul class="bullet-list">
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> <strong>The Video View Skew:</strong> Passive video view counts range from 1,000 to 200,000+, while static image posts expose no public views.</li>
+                    <li><i class="fa-solid fa-eye-slash"></i> <strong>Image Blindness:</strong> Standard sorting by engagement/view volume wipes out Carousel (Sidecar) posts entirely.</li>
+                    <li><i class="fa-solid fa-money-bill-wave"></i> <strong>Token Financial Drain:</strong> Feeding raw, unfiltered scraper results straight to LLM vision models drains OpenAI API limits on junk content.</li>
+                </ul>
+            </div>
+            <div class="code-snippet">
+// The Linear Math Bias Problem:
+Popularity = VideoViewCount + Likes + Comments
+
+// Video Post Baseline:
+15,000 (Views) + (50 * 5) + (10 * 20) = 15,450
+
+// Top-Performing Carousel Ad:
+0 (Null Views) + (240 * 5) + (44 * 20) = 2,080
+
+// Result: Image ads look like "failures" next to basic reels.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3: Live System Architecture -->
+<div class="slide-container" id="slide3">
+    <h2 class="slide-title">System Architecture: <span>Live n8n Execution Canvas</span></h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <p style="margin-bottom: 20px; font-size: 19px; color: #f8fafc;">A fully decoupled, event-driven data flow running on self-hosted Railway server infrastructure. All nodes compile and pass state successfully.</p>
+                <ul class="bullet-list">
+                    <li><i class="fa-solid fa-circle-check" style="color: #10b981;"></i> <strong>Zero Ingestion Session Loss:</strong> Structured Apify integration automatically recovers on proxy failure.</li>
+                    <li><i class="fa-solid fa-circle-check" style="color: #10b981;"></i> <strong>State Preservation:</strong> Node execution logs are permanently cataloged to monitor visual pipeline drift.</li>
+                    <li><i class="fa-solid fa-circle-check" style="color: #10b981;"></i> <strong>Reliable Syncing:</strong> Append operations run asynchronously to preserve Google Sheet limits.</li>
+                </ul>
+            </div>
+            
+            <!-- Real-Feel Browser mockup wrapping your cropped workflow screenshot -->
+            <div class="browser-mockup">
+                <div class="browser-bar">
+                    <span class="browser-dot red"></span>
+                    <span class="browser-dot yellow"></span>
+                    <span class="browser-dot green"></span>
+                    <span class="browser-address">primary-production-48c7b.up.railway.app</span>
+                </div>
+                <div class="browser-content">
+                    <img src="16c190a3-42ec-4ad3-9556-76c9c2a8e5a7.png" alt="n8n Production Workflow Pipeline" class="workflow-screenshot" onerror="handleImageError(this)">
+                    <div class="image-fallback-box" id="n8n-fallback">
+                        <i class="fa-solid fa-diagram-project" style="font-size: 48px; color: #6366f1; margin-bottom: 15px;"></i>
+                        <span style="font-weight: 600; color: #ffffff; margin-bottom: 8px;">n8n Workflow Execution Canvas</span>
+                        <span style="font-size: 13px; color: #94a3b8; text-align: center; max-width: 320px;">Place your cropped <b>16c190a3-42ec-4ad3-9556-76c9c2a8e5a7.png</b> screenshot in the same repository directory to render the live workspace view.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 4: Step 1: Decentralized Scraping -->
+<div class="slide-container" id="slide4">
+    <h2 class="slide-title">Step 1: <span>Decentralized Content Extraction</span></h2>
+    <div class="content-area">
+        <div class="two-column highlight-numbers-layout">
+            <div class="number-box">
+                <div class="number">0</div>
+                <div class="number-label">Cookie Credentials Needed</div>
+            </div>
+            <div>
+                <h3>Bypassing Meta's CDN Barriers</h3>
+                <p style="margin-bottom: 20px;">By using Apify's Instagram Scraper, the pipeline completely circumvents Meta's aggressive account checkpoint blocks. By executing public-only, cookieless scrapers routed through thousands of residential rotating proxies, Meta sees legitimate, decentralized traffic requests.</p>
+                <ul class="bullet-list" style="font-size: 16px;">
+                    <li><i class="fa-solid fa-shield"></i> <strong>Zero Shadowban Risk:</strong> Because the pipeline uses no real accounts, personal creator profiles are never at risk of suspension.</li>
+                    <li><i class="fa-solid fa-stopwatch"></i> <strong>Timeposted Normalization:</strong> Raw timestamps are automatically normalized to local operational timezones directly at the ingestion boundary.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 5: Step 2: Programmatic Data Normalization -->
+<div class="slide-container" id="slide5">
+    <h2 class="slide-title">Step 2: <span>Weighted Popularity Calculations</span></h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <p style="margin-bottom: 20px; font-size: 19px; color: #f8fafc;">To find posts that genuinely resonated, the pipeline runs a weighted engagement formula via an inline JavaScript node.</p>
+                <p style="margin-bottom: 25px;">Instead of counting a passive view equal to an active click, the formula scales values based on <strong>user intent and friction</strong>. A click to comment requires much more friction than a double-tap to like.</p>
+                <ul class="bullet-list">
+                    <li><i class="fa-solid fa-bolt"></i> <strong>Likes are Weighted x5:</strong> Indicates deliberate interest.</li>
+                    <li><i class="fa-solid fa-comment"></i> <strong>Comments are Weighted x20:</strong> Proves deep brand dialogue.</li>
+                </ul>
+            </div>
+            <div class="code-snippet">
+// Weighted Popularity Algorithm (JS Node)
+for (let item of $input.all()) {
+  const views = item.json.videoViewCount || 0; 
+  const likes = item.json.likesCount || 0;
+  const comments = item.json.commentsCount || 0;
+  
+  // High friction engagement gets disproportionate weight
+  item.json.popularityScore = views + (likes * 5) + (comments * 20);
+}
+
+let sorted = $input.all().sort((a, b) => b.json.popularityScore - a.json.popularityScore);
+return sorted.slice(0, 20); // Retain top 20 highest value anomalies
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 6: Step 3: Pure Interaction Swimlanes -->
+<div class="slide-container" id="slide6">
+    <h2 class="slide-title">Step 3: <span>Peering with the Content-Type Split</span></h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="code-snippet">
+// Segmenting into Peer Swimlanes (JS Node)
+let videos = []; let images = [];
+
+for (let item of $input.all()) {
+  if (item.json.VideoURL && item.json.VideoURL !== "null") {
+    item.json.contentType = "video";
+    videos.push(item);
+  } else {
+    item.json.contentType = "image";
+    images.push(item);
+  }
+}
+
+// Extract top 10 from each silo independently
+let topVideos = videos.slice(0, 10);
+let topImages = images.slice(0, 10);
+
+return [...topVideos, ...topImages]; // Balanced pool of 20 elements
+            </div>
+            <div>
+                <h3>Balancing Videos and Images</h3>
+                <p style="margin-bottom: 20px;">Sorting purely by raw popularity score would completely bury static image ads under viral video view counts. To prevent this, the second JavaScript node splits incoming assets into separate silos based on the presence of a video payload.</p>
+                <p style="margin-bottom: 20px;">By evaluating the top 10 videos against videos, and the top 10 carousels against carousels, the downstream AI is guaranteed a perfectly balanced diet of visual strategies to analyze.</p>
+                <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 15px; border-radius: 4px;">
+                    <span style="color: #10b981; font-weight: 600; display: block; margin-bottom: 5px;">The Operational Result:</span>
+                    Carousel, sidecar, and static photo strategies receive identical analytical attention as high-reach video Reels.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7: Step 4: Multi-Modal Context Delivery -->
+<div class="slide-container" id="slide7">
+    <h2 class="slide-title">Step 4: <span>Unifying Creative &amp; Copy Context</span></h2>
+    <div class="content-area">
+        <div class="two-column highlight-numbers-layout">
+            <div>
+                <div class="code-snippet" style="font-size: 13px; line-height: 1.4;">
+// Unification Fallback mapping
+imageUrl = childPosts[0].displayUrl 
+           || displayUrl;
+
+// Dynamic Prompt injection
+- Content Type: {{ $json.Content_Type }}
+- Caption/Text: {{ $json.Caption }}
+- Live Image URL: {{ $json.imageUrl }}
+                </div>
+            </div>
+            <div>
+                <h3>Feeding Live URLs to the Vision Model</h3>
+                <p style="margin-bottom: 20px;">Meta's CDN links contain temporary security tokens that expire within 24 hours. To bypass the slow, costly process of downloading binary images into n8n's memory, the pipeline dynamically extracts a flat <code>imageUrl</code> variable immediately after scraping.</p>
+                <p style="margin-bottom: 20px;">By passing this active, live web link straight into the text prompt payload, <strong>gpt-4o-mini</strong>'s vision model reads the image directly from Meta's servers, interpreting text overlays and creative layouts without any local storage friction.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 8: Step 5: Structuring LLM Responses -->
+<div class="slide-container" id="slide8">
+    <h2 class="slide-title">Step 5: <span>Enforcing Structured JSON Output</span></h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <p style="margin-bottom: 20px; font-size: 19px; color: #f8fafc;">Standard LLM text outputs are impossible to parse into database rows. We use a JSON schema to enforce strict database columns.</p>
+                <p style="margin-bottom: 20px;">The connected <strong>Structured Output Parser</strong> node acts as a hard physical mold. It forces the LLM's raw reasoning to output as a flat JSON dictionary containing exactly 6 keys, stripping away all conversational preamble.</p>
+                <ul class="bullet-list">
+                    <li><i class="fa-solid fa-code-merge"></i> <strong>Type Safety:</strong> Enforces numeric values for scores.</li>
+                    <li><i class="fa-solid fa-circle-nodes"></i> <strong>Zero Parsing Failures:</strong> Protects downstream spreadsheet nodes from breaking.</li>
+                </ul>
+            </div>
+            <div class="code-snippet">
+// The JSON Schema Enforced on GPT (Structured Parser)
+{
+  "type": "object",
+  "properties": {
+    "post_description": { "type": "string" },
+    "targeted_user_persona": { "type": "string" },
+    "hook_type": { "type": "string" },
+    "hook_trigger_element": { "type": "string" },
+    "hook_score": { "type": "number" },
+    "hook_reason": { "type": "string" }
+  },
+  "required": ["post_description", "targeted_user_persona", "hook_type", "hook_trigger_element", "hook_score", "hook_reason"]
+}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9: Step 6: Automated Database Injection -->
+<div class="slide-container" id="slide9">
+    <h2 class="slide-title">Step 6: <span>The Executive Makeover Script</span></h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="code-snippet" style="font-size: 13px; line-height: 1.4;">
+// Google Apps Script Makeover Excerpt
+function formatInstagramGrind() {
+  var sheet = SpreadsheetApp.getActive().getSheetByName("instagram_grind");
+  sheet.setFontFamily("Roboto").setFontSize(10);
+  
+  // Style the Header Row
+  sheet.getRange(1, 1, 1, maxCols).setBackground("#333333")
+                                   .setFontColor("#ffffff")
+                                   .setFontWeight("bold");
+  sheet.setFrozenRows(1);
+  
+  // Set Uniform Heights & wrapping
+  sheet.setRowHeights(2, maxRows - 1, 45);
+  sheet.getDataRange().setWrapStrategy(WrapStrategy.WRAP);
+}
+            </div>
+            <div>
+                <h3>Creating a Clean Executive Dashboard</h3>
+                <p style="margin-bottom: 20px;">A raw database filled with sprawling AI text blocks, massive Meta links, and raw engagement counts quickly turns into an unreadable mess. To establish a clean visual hierarchy, we built a custom Google Apps Script makeover engine.</p>
+                <p style="margin-bottom: 20px;">By executing this script, the spreadsheet instantly formats with Roboto typography, a frozen charcoal header row, clean zebra-striping, and a uniform 45px row height limit that wraps text beautifully.</p>
+                <div style="background: rgba(99, 102, 241, 0.1); border-left: 4px solid #6366f1; padding: 15px; border-radius: 4px;">
+                    <span style="color: #6366f1; font-weight: 600; display: block; margin-bottom: 5px;">The Operational Outcome:</span>
+                    A polished, scannable competitive intelligence dashboard that can be digested by stakeholders in under three seconds.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10: Financial Guardrails & Token Economics -->
+<div class="slide-container" id="slide10">
+    <h2 class="slide-title">Token Economics: <span>The Financial Guardrails</span></h2>
+    <div class="content-area">
+        <div class="chart-container">
+            <div class="bar">
+                <div class="label">Raw API Pipeline</div>
+                <div class="bar-inner"><div class="bar-fill" style="width: 100%; background: linear-gradient(90deg, #ef4444, #b91c1c);">100% Cost (No pre-filtering)</div></div>
+            </div>
+            <div class="bar">
+                <div class="label">Optimized Pipeline</div>
+                <div class="bar-inner"><div class="bar-fill" style="width: 21%; background: linear-gradient(90deg, #10b981, #047857);">21% Cost (With JS Filter)</div></div>
+            </div>
+        </div>
+        <p class="chart-summary">By running our weighted popularity algorithm in native JavaScript on n8n *before* hitting the LLM gateway, we cut down 92 raw scraper items to exactly the 20 highest-signal viral anomalies. This pre-filtering step reduces OpenAI API token consumption by a massive 79% per execution run.</p>
+    </div>
+</div>
+
+<!-- Slide 11: Real-World Business Outcomes -->
+<div class="slide-container" id="slide11">
+    <h2 class="slide-title">The D2C <span>Dog Food Hook Matrix</span></h2>
+    <div class="table-layout">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hook Category</th>
+                    <th>User Persona Target</th>
+                    <th>Psychological Trigger Used</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>anxiety_safety_alert</strong></td>
+                    <td>Anxious/Skeptical Parent</td>
+                    <td>Ingredients transparency, toxics alert, raw food safety.</td>
+                </tr>
+                <tr>
+                    <td><strong>product_comparison_dupe</strong></td>
+                    <td>Comparative Researcher</td>
+                    <td>Kibble vs. Fresh Food showdowns, brand-to-brand cost dupes.</td>
+                </tr>
+                <tr>
+                    <td><strong>scientific_vet_verification</strong></td>
+                    <td>Evidence-Based Buyer</td>
+                    <td>Clinical trials, expert veterinarian seals of approval.</td>
+                </tr>
+                <tr>
+                    <td><strong>value_budget_optimization</strong></td>
+                    <td>Price-Conscious Optimizer</td>
+                    <td>Cost-per-meal breakdowns, premium kibble toppers hacks.</td>
+                </tr>
+                <tr>
+                    <td><strong>fussy_eater_problem_solver</strong></td>
+                    <td>Frustrated Caregiver</td>
+                    <td>Palatability excitement, raw transition guides, sensitive gut fixes.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Slide 12: Contact / Q&A Slide -->
+<div class="slide-container" id="slide12">
+    <div class="content-area" style="justify-content: center;">
+        <div class="qa-layout">
+            <h2>Quiet Authority</h2>
+            <p>A demonstration of clean data strategy, cost optimization, and anti-fragile automation pipelines in the premium D2C Pet Care ecosystem.</p>
+            <div class="badge-container">
+                <div class="badge"><i class="fa-solid fa-code"></i> n8n Core Engine</div>
+                <div class="badge"><i class="fa-solid fa-database"></i> PostgreSQL / S3</div>
+                <div class="badge"><i class="fa-solid fa-brain"></i> gpt-4o-mini Vision</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handles image loading failure smoothly without disrupting page aesthetics
+    function handleImageError(img) {
+        img.style.display = 'none';
+        document.getElementById('n8n-fallback').style.display = 'flex';
+    }
+</script>
+
+</body></html>
